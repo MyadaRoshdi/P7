@@ -126,7 +126,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       Initialize state.
       */
       //set the state with the initial location and zero velocity
-      x_ << meas_package.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0, 0; 
+      x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0, 0, 0; 
 
       time_us_ = meas_package.timestamp_;
     }
@@ -139,7 +139,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   time_us_ = meas_package.timestamp_;
     
   //Predict
-  predict(dt);
+  Prediction(dt);
     
   //Update 
   if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
