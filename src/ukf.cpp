@@ -67,7 +67,7 @@ UKF::UKF() {
  n_aug_ = 7;
   
   // set Sigma point spreading parameter
-  lambda_ = 3 - n_aug;  // Rule of thump
+  lambda_ = 3 - n_aug_;  // Rule of thump
   
   // Initialize predicted sigma points matrix, create matrix with predicted sigma points as columns
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1); // 5 X 15
@@ -99,14 +99,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     
    
 
-    if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
+    if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
 
       /**
       Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
       */
-    	float rho = measurement_pack.raw_measurements_[0];
-        float theta = measurement_pack.raw_measurements_[1];
-        float rho_dot = measurement_pack.raw_measurements_[2];
+    	float rho = meas_package.raw_measurements_[0];
+        float theta = meas_package.raw_measurements_[1];
+        float rho_dot = meas_package.raw_measurements_[2];
         float px = rho * cos(theta);
         float py = rho * sin(theta);
         float v = rho_dot ;
@@ -116,42 +116,42 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
         //set the state with the initial location and  velocity, yaw and yaw_dot
         x_ << px, py, v, yaw, yaw_dot;
 
-         time_us_ = measurement_pack.timestamp_;
+         time_us_ = meas_package.timestamp_;
 
 
 
     }
-    else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
+    else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
       /**
       Initialize state.
       */
       //set the state with the initial location and zero velocity
-      x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0, 0; 
+      x_ << meas_package.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0, 0; 
 
-      time_us_ = measurement_pack.timestamp_;
+      time_us_ = meas_package.timestamp_;
     }
 
   // done initializing
   is_initialized_ = true;
     
   //compute the time elapsed between the current and previous measurements
-  float dt = (measurement_pack.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
-  time_us_ = measurement_pack.timestamp_;
+  float dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
+  time_us_ = meas_package.timestamp_;
     
   //Predict
   predict(dt);
     
   //Update 
-  if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) 
+  if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
       UpdateLidar(meas_package);
     }
-    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_)
+    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
       UpdateRadar(meas_package);
     }
     
     
     return;
-  }
+  
 }
 
 /**
