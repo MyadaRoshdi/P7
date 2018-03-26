@@ -93,79 +93,82 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		  * Create the covariance matrix.
 		  * Remember: you'll need to convert radar from polar to cartesian coordinates.
 		*/
-		// Initialize state measurement
-		x_ << 1, 1, 1, 1, 0.1;
 
-               //  initialize covariance matrix
-                P_  << 0.15, 0, 0, 0, 0,
-                       0, 0.15, 0, 0, 0,
-                       0, 0, 1, 0, 0,
-                       0, 0, 0, 1, 0,
-                       0, 0, 0, 0, 1;
-               
-		// initialize timestamp
-               time_us_ = meas_package.timestamp_;
+		if ((meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) ||
+			(meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_)) {
+			// Initialize state measurement
+			x_ << 1, 1, 1, 1, 0.1;
 
-		if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
+			//  initialize covariance matrix
+			P_ << 0.15, 0, 0, 0, 0,
+				0, 0.15, 0, 0, 0,
+				0, 0, 1, 0, 0,
+				0, 0, 0, 1, 0,
+				0, 0, 0, 0, 1;
 
-			/**
-			Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
-			*/
-			/*
-			float rho = meas_package.raw_measurements_[0];
-			float theta = meas_package.raw_measurements_[1];
-			float rho_dot = meas_package.raw_measurements_[2];
-			float px = rho * cos(theta);
-			float py = rho * sin(theta);
-			float v = rho_dot;
-			float yaw = theta;
-			float yaw_dot = 0; // since we are having CTRV, so Turning rate is contstant.
+			// initialize timestamp
+			time_us_ = meas_package.timestamp_;
 
-			//set the state with the initial location and  velocity, yaw and yaw_dot
-			x_ << px, py, v, yaw, yaw_dot;
-                        */
-			
-			float ro = meas_package.raw_measurements_(0);
-                        float phi = meas_package.raw_measurements_(1);
-                        float ro_dot = meas_package.raw_measurements_(2);
-                        x_(0) = ro     * cos(phi);
-                        x_(1) = ro     * sin(phi);
-			
+			if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
+
+				/**
+				Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
+				*/
+				/*
+				float rho = meas_package.raw_measurements_[0];
+				float theta = meas_package.raw_measurements_[1];
+				float rho_dot = meas_package.raw_measurements_[2];
+				float px = rho * cos(theta);
+				float py = rho * sin(theta);
+				float v = rho_dot;
+				float yaw = theta;
+				float yaw_dot = 0; // since we are having CTRV, so Turning rate is contstant.
+
+				//set the state with the initial location and  velocity, yaw and yaw_dot
+				x_ << px, py, v, yaw, yaw_dot;
+							*/
+
+				float ro = meas_package.raw_measurements_(0);
+				float phi = meas_package.raw_measurements_(1);
+				float ro_dot = meas_package.raw_measurements_(2);
+				x_(0) = ro     * cos(phi);
+				x_(1) = ro     * sin(phi);
 
 
+
+			}
+			else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
+				/**
+				Initialize state.
+				*/
+				//set the state with the initial location and zero velocity
+				x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 1, 1, 0.1;
+
+
+			}
+
+			// done initializing
+			is_initialized_ = true;
+			return;
 		}
-		else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
-			/**
-			Initialize state.
-			*/
-			//set the state with the initial location and zero velocity
-			x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 1, 1, 0.1;
 
-			
+		//compute the time elapsed between the current and previous measurements
+		double dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
+		time_us_ = meas_package.timestamp_;
+
+		//Predict
+		Prediction(dt);
+
+		//Update 
+		if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
+			UpdateLidar(meas_package);
+		}
+		else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
+			UpdateRadar(meas_package);
 		}
 
-		// done initializing
-		is_initialized_ = true;
-		return;
+
 	}
-    
-  //compute the time elapsed between the current and previous measurements
-  double dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
-  time_us_ = meas_package.timestamp_;
-    
-  //Predict
-  Prediction(dt);
-    
-  //Update 
-  if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
-      UpdateLidar(meas_package);
-    }
-    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
-      UpdateRadar(meas_package);
-    }
-    
-    
-    return;
   
 }
 
