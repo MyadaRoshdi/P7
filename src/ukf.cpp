@@ -20,16 +20,15 @@ UKF::UKF() {
 
   // initial state vector
   x_ = VectorXd(5);
-   x_ << 1, 1, 1, 1, 1;
 
   // initial covariance matrix
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 30;
+  std_a_ = 2;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 30;
+  std_yawdd_ = 0.3;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -94,10 +93,18 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		  * Create the covariance matrix.
 		  * Remember: you'll need to convert radar from polar to cartesian coordinates.
 		*/
-		// first measurement
-		cout << "UKF: " << endl;
+		// Initialize state measurement
+		x_ << 1, 1, 1, 1, 0.1;
 
-
+               //  initialize covariance matrix
+                P_  << 0.15, 0, 0, 0, 0,
+                       0, 0.15, 0, 0, 0,
+                       0, 0, 1, 0, 0,
+                       0, 0, 0, 1, 0,
+                       0, 0, 0, 0, 1;
+               
+		// initialize timestamp
+               time_us_ = meas_package.timestamp_;
 
 		if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
 
@@ -116,8 +123,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			//set the state with the initial location and  velocity, yaw and yaw_dot
 			x_ << px, py, v, yaw, yaw_dot;
 
-			time_us_ = meas_package.timestamp_;
-
+			
 
 
 		}
@@ -126,9 +132,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			Initialize state.
 			*/
 			//set the state with the initial location and zero velocity
-			x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0, 0, 0;
+			x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 1, 1, 0.1;
 
-			time_us_ = meas_package.timestamp_;
+			
 		}
 
 		// done initializing
