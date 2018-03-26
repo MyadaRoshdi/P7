@@ -326,8 +326,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   for (int i=0; i < 2*n_aug_+1; i++) {
       z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
-  //innovation covariance matrix S
-  MatrixXd S = MatrixXd(n_z_, n_z_);
+  
   S.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
     //residual
@@ -347,7 +346,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
           
   S = S + R;
    /*****************************************************************************
-   *  Update Radar measurment
+   *  Update Lidar measurment
    ****************************************************************************/
   //create matrix for cross correlation Tc
   MatrixXd Tc = MatrixXd(n_z_, n_z_);
@@ -386,7 +385,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   P_ = P_ - K*S*K.transpose();
   
      /*****************************************************************************
-   *  Calculate Radar NIS
+   *  Calculate Lidar NIS
    ****************************************************************************/
 }
 
@@ -438,8 +437,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   for (int i=0; i < 2*n_aug_+1; i++) {
       z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
-  //innovation covariance matrix S
-  MatrixXd S = MatrixXd(n_z_, n_z_);
+  
   S.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
     //residual
