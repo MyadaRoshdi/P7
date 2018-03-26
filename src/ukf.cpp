@@ -111,6 +111,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			/**
 			Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
 			*/
+			/*
 			float rho = meas_package.raw_measurements_[0];
 			float theta = meas_package.raw_measurements_[1];
 			float rho_dot = meas_package.raw_measurements_[2];
@@ -122,7 +123,13 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
 			//set the state with the initial location and  velocity, yaw and yaw_dot
 			x_ << px, py, v, yaw, yaw_dot;
-
+                        */
+			
+			float ro = meas_package.raw_measurements_(0);
+                        float phi = meas_package.raw_measurements_(1);
+                        float ro_dot = meas_package.raw_measurements_(2);
+                        x_(0) = ro     * cos(phi);
+                        x_(1) = ro     * sin(phi);
 			
 
 
