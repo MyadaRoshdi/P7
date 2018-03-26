@@ -88,51 +88,53 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   /*****************************************************************************
    *  Initialization (1st measurment)
    ****************************************************************************/
-  if (!is_initialized_) {
-    /**
-      * Initialize the state x_ with the first measurement.
-      * Create the covariance matrix.
-      * Remember: you'll need to convert radar from polar to cartesian coordinates.
-    */
-    // first measurement
-    cout << "UKF: " << endl;
-    
-   
-
-    if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
-
-      /**
-      Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
-      */
-    	float rho = meas_package.raw_measurements_[0];
-        float theta = meas_package.raw_measurements_[1];
-        float rho_dot = meas_package.raw_measurements_[2];
-        float px = rho * cos(theta);
-        float py = rho * sin(theta);
-        float v = rho_dot ;
-        float yaw = theta;
-        float yaw_dot = 0; // since we are having CTRV, so Turning rate is contstant.
-
-        //set the state with the initial location and  velocity, yaw and yaw_dot
-        x_ << px, py, v, yaw, yaw_dot;
-
-         time_us_ = meas_package.timestamp_;
+	if (!is_initialized_) {
+		/**
+		  * Initialize the state x_ with the first measurement.
+		  * Create the covariance matrix.
+		  * Remember: you'll need to convert radar from polar to cartesian coordinates.
+		*/
+		// first measurement
+		cout << "UKF: " << endl;
 
 
 
-    }
-    else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
-      /**
-      Initialize state.
-      */
-      //set the state with the initial location and zero velocity
-      x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0, 0, 0; 
+		if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
 
-      time_us_ = meas_package.timestamp_;
-    }
+			/**
+			Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
+			*/
+			float rho = meas_package.raw_measurements_[0];
+			float theta = meas_package.raw_measurements_[1];
+			float rho_dot = meas_package.raw_measurements_[2];
+			float px = rho * cos(theta);
+			float py = rho * sin(theta);
+			float v = rho_dot;
+			float yaw = theta;
+			float yaw_dot = 0; // since we are having CTRV, so Turning rate is contstant.
 
-  // done initializing
-  is_initialized_ = true;
+			//set the state with the initial location and  velocity, yaw and yaw_dot
+			x_ << px, py, v, yaw, yaw_dot;
+
+			time_us_ = meas_package.timestamp_;
+
+
+
+		}
+		else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
+			/**
+			Initialize state.
+			*/
+			//set the state with the initial location and zero velocity
+			x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0, 0, 0;
+
+			time_us_ = meas_package.timestamp_;
+		}
+
+		// done initializing
+		is_initialized_ = true;
+		return;
+	}
     
   //compute the time elapsed between the current and previous measurements
   double dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
@@ -194,8 +196,7 @@ void UKF::Prediction(double dt) {
   
   //create augmented sigma points
   Xsig_aug_.col(0)  = x_aug_;
-  for (int i = 0; i< n_aug_; i++)
-  {
+  for (int i = 0; i< n_aug_; i++) {
     Xsig_aug_.col(i+1)       = x_aug_ + sqrt(lambda+n_aug_) * L.col(i);
     Xsig_aug_.col(i+1+n_aug_) = x_aug_ - sqrt(lambda+n_aug_) * L.col(i);
   }
@@ -499,5 +500,6 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
      /*****************************************************************************
    *  Calculate Radar NIS
    ****************************************************************************/
+  
   
 }
