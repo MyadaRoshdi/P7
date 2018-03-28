@@ -25,10 +25,10 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 15;
+  std_a_ = 2.0;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.35 ;
+  std_yawdd_ = 2.0;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -96,14 +96,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
 		
 			// Initialize state measurement
-			x_ << 1, 1, 0, 0, 0;
+			x_ << 1, 1, 5.199937e+00, 1.036644e-03, 2.072960e-02;// using the Lidar 1st measurment for initialization
 
 			//  initialize state covariance matrix
-			P_ << 1, 0, 0, 0, 0,
-                            0, 1, 0, 0, 0,
+			P_ << 0.15, 0, 0, 0, 0,
+                            0, 0.15, 0, 0, 0,
                             0, 0, 10, 0, 0,
                             0, 0, 0, 1, 0,
-                            0, 0, 0, 0, 10;
+                            0, 0, 0, 0, 10; // standard deviation of the lidar x and y measurements is 0.15
 
 			// initialize timestamp
 			time_us_ = meas_package.timestamp_;
