@@ -390,13 +390,13 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
     Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
   }
-
+  cout << "6" << endl;
   //Kalman gain K;
   MatrixXd K = Tc * S.inverse();
 
   //residual
   VectorXd z_diff = meas_package.raw_measurements_ - z_pred;
-  
+  cout << "7" << endl;
    //angle normalization
   while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
   while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
@@ -404,7 +404,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
-
+  cout << "8" << endl;
   // print the output
   cout << "x_ Lidar= " << x_ << endl;
   cout << "P_ Lidar= " << P_ << endl;
