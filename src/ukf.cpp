@@ -101,9 +101,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			//  initialize state covariance matrix
 			P_ << 0.15, 0, 0, 0, 0,
                             0, 0.15, 0, 0, 0,
-                            0, 0, 10, 0, 0,
+                            0, 0, 1, 0, 0,
                             0, 0, 0, 1, 0,
-                            0, 0, 0, 0, 10; // standard deviation of the lidar x and y measurements is 0.15
+                            0, 0, 0, 0, 1; // standard deviation of the lidar x and y measurements is 0.15
 
 			// initialize timestamp
 			time_us_ = meas_package.timestamp_;
