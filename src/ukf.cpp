@@ -327,6 +327,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //measurement covariance matrix S
   MatrixXd S = MatrixXd(n_z_, n_z_);
   
+  cout << "1" << endl;
   //transform sigma points into measurement space
    for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
 
@@ -339,12 +340,13 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
     Zsig(1,i) = p_y;                   //py
     
   }
+   cout << "2" << endl;
   //calculate mean predicted measurement
   z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
       z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
-  
+  cout << "" << endl;
   S.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
     //residual
@@ -356,13 +358,14 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
     S = S + weights_(i) * z_diff * z_diff.transpose();
   }
-
+  cout << "4" << endl;
   //add measurement noise covariance matrix
   MatrixXd R = MatrixXd(n_z_, n_z_);
   R << std_laspx_*std_laspx_, 0,
 	  0, std_laspy_*std_laspy_;
           
   S = S + R;
+  cout << "5" << endl;
    /*****************************************************************************
    *  Update Lidar measurment
    ****************************************************************************/
