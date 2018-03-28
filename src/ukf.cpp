@@ -143,7 +143,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				Initialize state.
 				*/
 				//set the state with the initial location (px,py) and zero velocity
-				x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0, 0.0;
+				//x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0, 0.0;
+				x_(0) = meas_package.raw_measurements_[0];
+				x_(1) = meas_package.raw_measurements_[1];
+
 				cout << " Initialization is done with Lidar data!" << endl;
 
 			}
@@ -327,7 +330,6 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //measurement covariance matrix S
   MatrixXd S = MatrixXd(n_z_, n_z_);
   
-  cout << "1" << endl;
   //transform sigma points into measurement space
    for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
 
@@ -340,7 +342,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
     Zsig(1,i) = p_y;                   //py
     
   }
-   cout << "2" << endl;
+   
   //calculate mean predicted measurement
   z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
@@ -358,14 +360,14 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
     S = S + weights_(i) * z_diff * z_diff.transpose();
   }
-  cout << "4" << endl;
+ 
   //add measurement noise covariance matrix
   MatrixXd R = MatrixXd(n_z_, n_z_);
   R << std_laspx_*std_laspx_, 0,
 	  0, std_laspy_*std_laspy_;
           
   S = S + R;
-  cout << "5" << endl;
+ 
    /*****************************************************************************
    *  Update Lidar measurment
    ****************************************************************************/
@@ -374,7 +376,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   
   //calculate cross correlation matrix
   Tc.fill(0.0);
-  cout << "6" << endl;
+  
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
 
     //residual
@@ -385,20 +387,20 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
     // state difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
-	cout << "7" << endl;
+	
     //angle normalization
     while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
     while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
     Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
   }
-  cout << "8" << endl;
+  
   //Kalman gain K;
   MatrixXd K = Tc * S.inverse();
 
   //residual
   VectorXd z_diff = meas_package.raw_measurements_ - z_pred;
-  cout << "9" << endl;
+ 
    //angle normalization
   while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
   while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
@@ -406,7 +408,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
-  cout << "8" << endl;
+  
   // print the output
   cout << "x_ Lidar= " << x_ << endl;
   cout << "P_ Lidar= " << P_ << endl;
