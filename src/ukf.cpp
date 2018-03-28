@@ -370,7 +370,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
    *  Update Lidar measurment
    ****************************************************************************/
   //create matrix for cross correlation Tc
-  MatrixXd Tc = MatrixXd(n_z_, n_z_);
+  MatrixXd Tc = MatrixXd(n_x_, n_z_);
   
   //calculate cross correlation matrix
   Tc.fill(0.0);
