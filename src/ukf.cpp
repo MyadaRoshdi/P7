@@ -28,7 +28,7 @@ UKF::UKF() {
   std_a_ = 2.0;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.3;
+  std_yawdd_ = 2.0;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -96,14 +96,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
 		
 			// Initialize state measurement
-			x_ << 1, 1, 1, 1, 0.1;
+			x_ << 1, 1, 0, 0, 0;
 
 			//  initialize state covariance matrix
-			P_ << 0.15, 0, 0, 0, 0,
-				0, 0.15, 0, 0, 0,
-				0, 0, 1, 0, 0,
-				0, 0, 0, 1, 0,
-				0, 0, 0, 0, 1;
+			P_ << 1, 0, 0, 0, 0,
+                            0, 1, 0, 0, 0,
+                            0, 0, 10, 0, 0,
+                            0, 0, 0, 1, 0,
+                            0, 0, 0, 0, 10;
 
 			// initialize timestamp
 			time_us_ = meas_package.timestamp_;
@@ -193,20 +193,22 @@ void UKF::Prediction(double dt) {
   
   //create augmented mean vector
   VectorXd x_aug_ = VectorXd(n_aug_);
+  x_aug_.fill(0.0);
 
   //create augmented state covariance
   MatrixXd P_aug_ = MatrixXd(n_aug_, n_aug_);
+  P_aug_.fill(0.0);	
   
   //create Augmented sigma points matrix
   MatrixXd Xsig_aug_ = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  Xsig_aug_.fill(0.0);	
   
-  //create augmented mean state
+  //create augmented mean state	
   x_aug_.head(5) = x_;
   x_aug_(5) = 0;
   x_aug_(6) = 0;
 
   //create augmented covariance matrix
-  P_aug_.fill(0.0);
   P_aug_.topLeftCorner(5,5) = P_;
   P_aug_(5,5) = std_a_*std_a_;
   P_aug_(6,6) = std_yawdd_*std_yawdd_;
@@ -214,7 +216,7 @@ void UKF::Prediction(double dt) {
   //create square root matrix
   MatrixXd L = P_aug_.llt().matrixL();
   
-  //create augmented sigma points
+  //create augmented sigma points	
   Xsig_aug_.col(0)  = x_aug_;
   for (int i = 0; i< n_aug_; i++) {
     Xsig_aug_.col(i+1)       = x_aug_ + sqrt(lambda_ +n_aug_) * L.col(i);
@@ -326,9 +328,11 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
   //mean predicted measurement
   VectorXd z_pred = VectorXd(n_z_);
+  z_pred.fill(0.0);	
   
   //measurement covariance matrix S
   MatrixXd S = MatrixXd(n_z_, n_z_);
+  S.fill(0.0);	
   
   //transform sigma points into measurement space
    for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
@@ -344,12 +348,10 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   }
    
   //calculate mean predicted measurement
-  z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
       z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
   cout << "" << endl;
-  S.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
     //residual
     VectorXd z_diff = Zsig.col(i) - z_pred;
