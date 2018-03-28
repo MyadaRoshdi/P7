@@ -132,6 +132,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				float ro_dot = meas_package.raw_measurements_(2);
 				x_(0) = ro     * cos(phi);
 				x_(1) = ro     * sin(phi);
+				cout << " Initialization is done with Radar data!" << endl;
+
 
 
 
@@ -142,7 +144,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				*/
 				//set the state with the initial location (px,py) and zero velocity
 				x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0, 0.0;
-
+				cout << " Initialization is done with Lidar data!" << endl;
 
 			}
 
@@ -357,7 +359,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //add measurement noise covariance matrix
   MatrixXd R = MatrixXd(n_z_, n_z_);
   R << std_laspx_*std_laspx_, 0,
-          0, std_laspy_*std_laspy_,
+	  0, std_laspy_*std_laspy_;
           
   S = S + R;
    /*****************************************************************************
