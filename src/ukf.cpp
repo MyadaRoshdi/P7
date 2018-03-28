@@ -314,6 +314,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
    /*****************************************************************************
    *  Predict Lidar measurment (Convert from 5-dim state to 2- dim state)
    ****************************************************************************/
+	cout << "Update Lidar!!" << endl;
   //set measurement dimension, Lidarr can measure distances px & py.
   int n_z_ = 2;
   
@@ -427,6 +428,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
    /*****************************************************************************
    *  Predict Radar measurment( Convert from 5-dim state to 3-dim state)
    ****************************************************************************/
+	cout << "Update Radar!!" << endl;
+
   //set measurement dimension, radar can measure r, phi, and r_dot
   int n_z_ = 3;
   
