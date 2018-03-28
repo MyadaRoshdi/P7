@@ -25,10 +25,10 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 2;
+  std_a_ = 2.0;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.3;
+  std_yawdd_ = 2.0;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -94,17 +94,16 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		  * Remember: you'll need to convert radar from polar to cartesian coordinates.
 		*/
 
-		if ((meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) ||
-			(meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_)) {
+		
 			// Initialize state measurement
-			x_ << 1, 1, 1, 1, 0.1;
+			x_ << 1, 1, 0, 0, 0;
 
-			//  initialize covariance matrix
-			P_ << 0.15, 0, 0, 0, 0,
-				0, 0.15, 0, 0, 0,
-				0, 0, 1, 0, 0,
+			//  initialize state covariance matrix
+			P_ << 1, 0, 0, 0, 0,
+				0, 1, 0, 0, 0,
+				0, 0, 10, 0, 0,
 				0, 0, 0, 1, 0,
-				0, 0, 0, 0, 1;
+				0, 0, 0, 0, 10;
 
 			// initialize timestamp
 			time_us_ = meas_package.timestamp_;
@@ -141,8 +140,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				/**
 				Initialize state.
 				*/
-				//set the state with the initial location and zero velocity
-				x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 1, 1, 0.1;
+				//set the state with the initial location (px,py) and zero velocity
+				x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0, 0.0;
 
 
 			}
@@ -168,7 +167,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		}
 
 
-	}
+	
   
 }
 
@@ -399,10 +398,17 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
+
+  // print the output
+  cout << "x_ Lidar= " << x_ << endl;
+  cout << "P_ Lidar= " << P_ << endl;
   
      /*****************************************************************************
    *  Calculate Lidar NIS
    ****************************************************************************/
+  double NIS = z_diff.transpose() * S.inverse() * z_diff;
+  cout << "NIS_Lidar= " << NIS << endl;
+
 }
 
 /**
@@ -510,10 +516,15 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
+
+  // print the output
+  cout << "x_ Radar= " << x_ << endl;
+  cout << "P_ Radar= " << P_ << endl;
   
      /*****************************************************************************
    *  Calculate Radar NIS
    ****************************************************************************/
-  
+  double NIS = z_diff.transpose() * S.inverse() * z_diff;
+  cout << "NIS_Radar= " << NIS << endl;
   
 }
