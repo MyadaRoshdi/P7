@@ -25,10 +25,10 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 2.0;
+  std_a_ = 0.6;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 2.0;
+  std_yawdd_ = 0.6;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -119,9 +119,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				float rho_dot = meas_package.raw_measurements_[2];
 				float px = rho * cos(phi);
 				float py = rho * sin(phi);
-				float v = 5.198979e+00;
-				float yaw = rho_dot * cos(phi);
-				float yaw_dot = rho_dot * sin(phi); // since we are having CTRV, so Turning rate is contstant.
+				float v =  rho_dot;
+				float yaw = 0;
+				float yaw_dot = 0; // since we are having CTRV, so Turning rate is contstant.
 
 				//set the state with the initial location and  velocity, yaw and yaw_dot
 				x_ << px, py, v, yaw, yaw_dot;
