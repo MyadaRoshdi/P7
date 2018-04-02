@@ -17,7 +17,7 @@ public:
   /**
   * Constructor.
   */
-  Tools(string L_out, string R_out);
+  Tools();
 
   /**
   * Destructor.
