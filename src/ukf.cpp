@@ -25,10 +25,10 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 1.0;
+  std_a_ = 2.0;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.5;
+  std_yawdd_ = 2.0;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -99,11 +99,11 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 			x_ << 1, 1, 5.199937e+00, 1.036644e-03, 2.072960e-02;// using the Lidar 1st measurment for initialization
 
 			//  initialize state covariance matrix
-			P_ << 0.15, 0, 0, 0, 0,
-                            0, 0.15, 0, 0, 0,
+			P_ << std_radr_*std_radr_, 0, 0, 0, 0,
+                            0, std_radr_*std_radr_, 0, 0, 0,
                             0, 0, 1, 0, 0,
-                            0, 0, 0, 1, 0,
-                            0, 0, 0, 0, 1; // standard deviation of the lidar x and y measurements is 0.15
+                            0, 0, 0, std_radphi_, 0,
+                            0, 0, 0, 0, std_radphi_; // standard deviation of the lidar x and y measurements is 0.15
 
 			// initialize timestamp
 			time_us_ = meas_package.timestamp_;
@@ -113,25 +113,21 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				/**
 				Convert radar from polar to cartesian coordinates and initialize state [px,py,v,yaw,yaw_dot].
 				*/
-				/*
+			
 				float rho = meas_package.raw_measurements_[0];
-				float theta = meas_package.raw_measurements_[1];
+				float phi = meas_package.raw_measurements_[1];
 				float rho_dot = meas_package.raw_measurements_[2];
-				float px = rho * cos(theta);
-				float py = rho * sin(theta);
-				float v = rho_dot;
-				float yaw = theta;
-				float yaw_dot = 0; // since we are having CTRV, so Turning rate is contstant.
+				float px = rho * cos(phi);
+				float py = rho * sin(phi);
+				float v = 5.198979e+00;
+				float yaw = rho_dot * cos(phi);
+				float yaw_dot = rho_dot * sin(phi); // since we are having CTRV, so Turning rate is contstant.
 
 				//set the state with the initial location and  velocity, yaw and yaw_dot
 				x_ << px, py, v, yaw, yaw_dot;
-							*/
+							
 
-				float ro = meas_package.raw_measurements_(0);
-				float phi = meas_package.raw_measurements_(1);
-				float ro_dot = meas_package.raw_measurements_(2);
-				x_(0) = ro     * cos(phi);
-				x_(1) = ro     * sin(phi);
+				
 				cout << " Initialization is done with Radar data!" << endl;
 
 
