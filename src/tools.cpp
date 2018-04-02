@@ -8,15 +8,16 @@ using std::vector;
 Tools::Tools() {
 
 	
-
+   L_out.open("L_out.txt", ios::out | ios::ate | ios::app);
+   R_out.open("R_out.txt", ios::out | ios::ate | ios::app);
 
 
 }
 
 Tools::~Tools() {
 	
-	L_out.open("L_out.txt", ios::out | ios::ate | ios::app);
-	R_out.open("R_out.txt", ios::out | ios::ate | ios::app);
+	L_out.close();
+	R_out.close();
 }
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
