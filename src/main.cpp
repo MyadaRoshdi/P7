@@ -136,7 +136,7 @@ int main()
 
 		  
 	      else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
-				  tools.L_write_line(ukf.NIS_R);
+				  tools.L_write_line(ukf.NIS_L);
 			  }
 
 		  
