@@ -137,7 +137,7 @@ int main()
 		  }
 
 		  if (tools.L_out.is_open()) {
-			  if (meas_package.sensor_type_ == MeasurementPackage::LIDAR) {
+			  if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
 				  tools.L_write_line(ukf.NIS_R);
 			  }
 
