@@ -2,6 +2,8 @@
 #define TOOLS_H_
 #include <vector>
 #include "Eigen/Dense"
+#include <iostream>
+#include <fstream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -9,7 +11,7 @@ using namespace std;
 
 class Tools {
 private:
-	ofstream L_out, R_out;
+	ofstream  L_out, R_out;
 public:
 
 	
