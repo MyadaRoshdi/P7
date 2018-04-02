@@ -25,7 +25,7 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 1.0;
+  std_a_ = 2.0;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ = 0.3;
@@ -219,7 +219,7 @@ void UKF::Prediction(double dt) {
 	  Xsig_.col(i + 1 + n_x_) = x_ - std::sqrt(lambda_ + n_x_)*L.col(i);
   }
 
-	cout<<"1"<<endl;
+	
   // Re-Define spreading parameter for augmented matrices
   lambda_ = 3 - n_aug_;
 
@@ -243,7 +243,7 @@ void UKF::Prediction(double dt) {
     Xsig_aug_.col(i+1)       = x_aug_ + sqrt(lambda_ +n_aug_) * L.col(i);
     Xsig_aug_.col(i+1+n_aug_) = x_aug_ - sqrt(lambda_ +n_aug_) * L.col(i);
   }
-  cout<<"2"<<endl;
+  
      /*****************************************************************************
    *  Predict Sigma points
    ****************************************************************************/
@@ -324,8 +324,8 @@ void UKF::Prediction(double dt) {
     // state difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
     //angle normalization
-    while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
-    while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+    //while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
+   // while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
 	P_pred_ = P_pred_ + weights_(i) * x_diff * x_diff.transpose() ;
   }
