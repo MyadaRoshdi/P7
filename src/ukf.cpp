@@ -25,7 +25,7 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 0.6;
+  std_a_ = 1.6;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ = 0.6;
@@ -143,7 +143,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				x_(0) = meas_package.raw_measurements_[0];
 				x_(1) = meas_package.raw_measurements_[1];
 
-				cout << " Initialization is done with Lidar data!" << endl;
+				//cout << " Initialization is done with Lidar data!" << endl;
 
 			}
 
@@ -185,7 +185,7 @@ void UKF::Prediction(double dt) {
   This function estimates the object's location. Modify the state
   vector, x_. Predict sigma points, the state, and the state covariance matrix.
   */
-  cout<< "Prediction step!"<< endl;
+ // cout<< "Prediction step!"<< endl;
      /*****************************************************************************
    *  Generate Sigma points
    ****************************************************************************/
@@ -442,14 +442,14 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   P_ = P_ - K*S*K.transpose();
   
   // print the output
-  cout << "x_ Lidar= " << x_ << endl;
-  cout << "P_ Lidar= " << P_ << endl;
+  //cout << "x_ Lidar= " << x_ << endl;
+  //cout << "P_ Lidar= " << P_ << endl;
   
      /*****************************************************************************
    *  Calculate Lidar NIS
    ****************************************************************************/
   double NIS = z_diff.transpose() * S.inverse() * z_diff;
-  cout << "NIS_Lidar= " << NIS << endl;
+ // cout << "NIS_Lidar= " << NIS << endl;
 
 }
 
@@ -467,7 +467,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
    /*****************************************************************************
    *  Predict Radar measurment( Convert from 5-dim state to 3-dim state)
    ****************************************************************************/
-	cout << "Update Radar!!" << endl;
+	//cout << "Update Radar!!" << endl;
 
   //set measurement dimension, radar can measure r, phi, and r_dot
   int n_z_ = 3;
@@ -567,13 +567,13 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   P_ = P_ - K*S*K.transpose();
 
   // print the output
-  cout << "x_ Radar= " << x_ << endl;
-  cout << "P_ Radar= " << P_ << endl;
+//  cout << "x_ Radar= " << x_ << endl;
+ // cout << "P_ Radar= " << P_ << endl;
   
      /*****************************************************************************
    *  Calculate Radar NIS
    ****************************************************************************/
   double NIS = z_diff.transpose() * S.inverse() * z_diff;
-  cout << "NIS_Radar= " << NIS << endl;
+  //cout << "NIS_Radar= " << NIS << endl;
   
 }
