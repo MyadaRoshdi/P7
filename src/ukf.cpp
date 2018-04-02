@@ -66,7 +66,7 @@ UKF::UKF() {
  n_aug_ = 7;
   
   // set Sigma point spreading parameter
-  lambda_ = 3 - n_aug_;  // Rule of thump
+ // lambda_ = 3 - n_aug_;  // Rule of thump
   
   // Initialize predicted sigma points matrix, create matrix with predicted sigma points as columns
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1); // 5 X 15
@@ -202,19 +202,39 @@ void UKF::Prediction(double dt) {
   //create Augmented sigma points matrix
   MatrixXd Xsig_aug_ = MatrixXd(n_aug_, 2 * n_aug_ + 1);
   Xsig_aug_.fill(0.0);	
-  
-  //create augmented mean state	
+
+  // Define spreading parameter
+  lambda_ = 3 - n_x_;
+
+  //create sigma point matrix
+  MatrixXd Xsig_ = MatrixXd(n_x_, 2 * n_x_ + 1);
+
+  //create square root matrix of P_
+  MatrixXd L = P_aug_.llt().matrixL();
+
+  //calculate sigma points, set sigma points as columns of  Xsig_
+  Xsig_.col(0) = x_;
+  for (int i = 0; i < n_x_; i++) {
+	  Xsig_.col(i + 1) = x_ + std::sqrt(lambda_ + n_x_)*L.col(i);
+	  Xsig_.col(i + 1 + n_x_) = x_ - std::sqrt(lambda_ + n_x_)*L.col(i);
+  }
+
+  // Re-Define spreading parameter for augmented matrices
+  lambda_ = 3 - n_aug_;
+
+  //create augmented mean state
   x_aug_.head(5) = x_;
   x_aug_(5) = 0;
   x_aug_(6) = 0;
+
 
   //create augmented covariance matrix
   P_aug_.topLeftCorner(5,5) = P_;
   P_aug_(5,5) = std_a_*std_a_;
   P_aug_(6,6) = std_yawdd_*std_yawdd_;
   
-  //create square root matrix
-  MatrixXd L = P_aug_.llt().matrixL();
+  //calculate square root matrix for P_aug_
+   L = P_aug_.llt().matrixL();
   
   //create augmented sigma points	
   Xsig_aug_.col(0)  = x_aug_;
@@ -275,33 +295,42 @@ void UKF::Prediction(double dt) {
    *  Predict Mean and Covariance
    ****************************************************************************/
  
+   //create vector for predicted state
+  VectorXd x_pred_ = VectorXd(n_x_);
+
+  //create covariance matrix for prediction
+  MatrixXd P_pred_ = MatrixXd(n_x_, n_x_);
+
   // set weights
   double weight_0 = lambda_ /(lambda_ +n_aug_);
   weights_(0) = weight_0;
+
   for (int i=1; i<2*n_aug_+1; i++) {  //2n+1 weights
     double weight = 0.5/(n_aug_+ lambda_);
     weights_(i) = weight;
   }
   
   //predicted state mean
-  x_.fill(0.0);
+  x_pred_.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
-    x_ = x_+ weights_(i) * Xsig_pred_.col(i);
+	  x_pred_ = x_pred_ + weights_(i) * Xsig_pred_.col(i);
   }
   
   //predicted state covariance matrix
-  P_.fill(0.0);
+  P_pred_.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
 
     // state difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
     //angle normalization
-    //while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
-   // while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+    while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
+    while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
-    P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
+	P_pred_ = P_pred_ + weights_(i) * x_diff * x_diff.transpose() ;
   }
   
+  x_ = x_pred_;
+  P_ = P_pred_;
 }
 
 /**
