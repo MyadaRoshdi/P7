@@ -186,7 +186,7 @@ void UKF::Prediction(double dt) {
   This function estimates the object's location. Modify the state
   vector, x_. Predict sigma points, the state, and the state covariance matrix.
   */
-  
+  cout<< "Prediction step!"<< endl;
      /*****************************************************************************
    *  Generate Sigma points
    ****************************************************************************/
@@ -219,6 +219,7 @@ void UKF::Prediction(double dt) {
 	  Xsig_.col(i + 1 + n_x_) = x_ - std::sqrt(lambda_ + n_x_)*L.col(i);
   }
 
+	cout<<"1"<<endl;
   // Re-Define spreading parameter for augmented matrices
   lambda_ = 3 - n_aug_;
 
@@ -242,7 +243,7 @@ void UKF::Prediction(double dt) {
     Xsig_aug_.col(i+1)       = x_aug_ + sqrt(lambda_ +n_aug_) * L.col(i);
     Xsig_aug_.col(i+1+n_aug_) = x_aug_ - sqrt(lambda_ +n_aug_) * L.col(i);
   }
-  
+  cout<<"2"<<endl;
      /*****************************************************************************
    *  Predict Sigma points
    ****************************************************************************/
