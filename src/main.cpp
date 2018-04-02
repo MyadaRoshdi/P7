@@ -133,8 +133,15 @@ int main()
 				  tools.R_write_line(ukf.NIS_R);
 			  }
 
+<<<<<<< HEAD
 		  
 	      else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+=======
+		  }
+
+		  if (tools.L_out.is_open()) {
+			  if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+>>>>>>> eaf8be5f17c5a576c567db753b487eb863330476
 				  tools.L_write_line(ukf.NIS_R);
 			  }
 
