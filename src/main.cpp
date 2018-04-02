@@ -128,20 +128,17 @@ int main()
     	  estimations.push_back(estimate);
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
-
-		  if (tools.R_out.is_open()) {
-			  if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+		 
+		  if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
 				  tools.R_write_line(ukf.NIS_R);
 			  }
 
-		  }
-
-		  if (tools.L_out.is_open()) {
-			  if (meas_package.sensor_type_ == MeasurementPackage::LIDAR) {
+		  
+	      else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
 				  tools.L_write_line(ukf.NIS_R);
 			  }
 
-		  }
+		  
 
 		 
 		

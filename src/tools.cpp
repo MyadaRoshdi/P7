@@ -7,17 +7,16 @@ using std::vector;
 
 Tools::Tools() {
 
-	L_out.open("L_out.txt", ios::out | ios::ate | ios::app);
-	R_out.open("R_out.txt", ios::out | ios::ate | ios::app);
+	
 
 
 
 }
 
 Tools::~Tools() {
-	L_out.close();
-	R_out.close();
-
+	
+	L_out.open("L_out.txt", ios::out | ios::ate | ios::app);
+	R_out.open("R_out.txt", ios::out | ios::ate | ios::app);
 }
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
@@ -62,11 +61,26 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 
 void Tools::L_write_line(double NIS_L)
 {
-	L_out << NIS_L << ",";
+	if (L_out.is_open()){
+
+		L_out << NIS_L << ",";
+	}
+	else{
+
+		cout << "Cannot open L_out file!!!" << endl;
+	}
+	
 }
 
 void Tools::R_write_line(double NIS_R)
 {
-	R_out << NIS_R << ",";
+	if (R_out.is_open()) {
+
+		R_out << NIS_R << ",";
+	}
+	else{
+
+		cout << "Cannot open R_out file!!!" << endl;
+	}
 }
 

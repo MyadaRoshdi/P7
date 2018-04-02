@@ -8,16 +8,16 @@ using Eigen::VectorXd;
 using namespace std;
 
 class Tools {
+private:
+	ofstream L_out, R_out;
 public:
 
-	ofstream L_out;
-
-	ofstream R_out;
+	
 
   /**
   * Constructor.
   */
-  Tools();
+  Tools(string L_out, string R_out);
 
   /**
   * Destructor.
