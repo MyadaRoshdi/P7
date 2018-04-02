@@ -210,7 +210,7 @@ void UKF::Prediction(double dt) {
   MatrixXd Xsig_ = MatrixXd(n_x_, 2 * n_x_ + 1);
 
   //create square root matrix of P_
-  MatrixXd L = P_aug_.llt().matrixL();
+  MatrixXd L = P_.llt().matrixL();
 
   //calculate sigma points, set sigma points as columns of  Xsig_
   Xsig_.col(0) = x_;
