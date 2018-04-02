@@ -74,6 +74,9 @@ UKF::UKF() {
   // Initialize vector for weights
   weights_ = VectorXd(2 * n_aug_ + 1); // 15
 
+  NIS_L = 0.0;
+  NIS_R = 0.0;
+
   
 }
 
@@ -448,7 +451,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
      /*****************************************************************************
    *  Calculate Lidar NIS
    ****************************************************************************/
-  double NIS = z_diff.transpose() * S.inverse() * z_diff;
+   NIS_L = z_diff.transpose() * S.inverse() * z_diff;
  // cout << "NIS_Lidar= " << NIS << endl;
 
 }
@@ -573,7 +576,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
      /*****************************************************************************
    *  Calculate Radar NIS
    ****************************************************************************/
-  double NIS = z_diff.transpose() * S.inverse() * z_diff;
+  NIS_R = z_diff.transpose() * S.inverse() * z_diff;
   //cout << "NIS_Radar= " << NIS << endl;
   
 }

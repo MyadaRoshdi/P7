@@ -5,9 +5,20 @@ using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using std::vector;
 
-Tools::Tools() {}
+Tools::Tools() {
 
-Tools::~Tools() {}
+	L_out.open("L_out.txt", ios::out | ios::ate | ios::app);
+	R_out.open("R_out.txt", ios::out | ios::ate | ios::app);
+
+
+
+}
+
+Tools::~Tools() {
+	L_out.close();
+	R_out.close();
+
+}
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
@@ -48,3 +59,14 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 	return rmse;
 
 }
+
+void Tools::L_write_line(double NIS_L)
+{
+	L_out << NIS_L << ",";
+}
+
+void Tools::R_write_line(double NIS_R)
+{
+	R_out << NIS_R << ",";
+}
+
