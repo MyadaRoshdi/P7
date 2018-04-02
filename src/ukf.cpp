@@ -191,7 +191,7 @@ void UKF::Prediction(double dt) {
    *  Generate Sigma points
    ****************************************************************************/
   
-  //create augmented mean vector
+  //create augmented mean state vector by adding 2-extra noise points
   VectorXd x_aug_ = VectorXd(n_aug_);
   x_aug_.fill(0.0);
 
@@ -356,9 +356,9 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
     //residual
     VectorXd z_diff = Zsig.col(i) - z_pred;
 
-    //angle normalization
-    while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
-    while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+    //angle normalization (Remove angle Normalization in prediction step)
+   // while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
+   // while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
 
     S = S + weights_(i) * z_diff * z_diff.transpose();
   }
@@ -480,8 +480,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     VectorXd z_diff = Zsig.col(i) - z_pred;
 
     //angle normalization
-    while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
-    while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+   // while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
+   // while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
 
     S = S + weights_(i) * z_diff * z_diff.transpose();
   }
