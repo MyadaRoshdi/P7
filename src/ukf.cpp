@@ -2,6 +2,8 @@
 #include "Eigen/Dense"
 #include <iostream>
 
+#define EPS 0.001
+
 using namespace std;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -9,7 +11,6 @@ using std::vector;
 
 /**
  * Initializes Unscented Kalman filter
- * This is scaffolding, do not modify
  */
 UKF::UKF() {
   // if this is false, laser measurements will be ignored (except during init)
@@ -18,13 +19,21 @@ UKF::UKF() {
   // if this is false, radar measurements will be ignored (except during init)
   use_radar_ = true;
 
+  // state vector dimension
+  n_x_ = 5;
+
   // initial state vector
-  x_ = VectorXd(5);
+  x_ = VectorXd(n_x_);
 
   // initial covariance matrix
-  P_ = MatrixXd(5, 5);
+  P_ = MatrixXd(n_x_, n_x_);
+  P_ << 1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0,
+        0, 0, 0, 1, 0,
+        0, 0, 0, 0, 1;
 
- // Process noise standard deviation longitudinal acceleration in m/s^2
+  // Process noise standard deviation longitudinal acceleration in m/s^2
   std_a_ = 1.5;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
@@ -45,16 +54,13 @@ UKF::UKF() {
   // Radar measurement noise standard deviation radius change in m/s
   std_radrd_ = 0.3;
 
-  //DO NOT MODIFY measurement noise values above these are provided by the sensor manufacturer.
-  
   /**
-
+  TODO:
   Complete the initialization. See ukf.h for other member properties.
-
   Hint: one or more values initialized above might be wildly off...
   */
-  // initially set to false, set to true in first call of ProcessMeasurement
-   lambda_ = 3 - n_x_;
+
+  lambda_ = 3 - n_x_;
 
   ///* Augmented state dimension
   n_aug_ = n_x_ + 2;
@@ -375,7 +381,7 @@ MatrixXd UKF::PredictSigmaPoints(MatrixXd Xsig, double delta_t, int n_x, int n_s
     double px_p, py_p;
 
     //avoid division by zero
-    if (fabs(yawd) > 0.001) {
+    if (fabs(yawd) > EPS) {
         px_p = p_x + v/yawd * ( sin (yaw + yawd*delta_t) - sin(yaw));
         py_p = p_y + v/yawd * ( cos(yaw) - cos(yaw+yawd*delta_t) );
     }
