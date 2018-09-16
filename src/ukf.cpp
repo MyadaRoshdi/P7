@@ -2,7 +2,6 @@
 #include "Eigen/Dense"
 #include <iostream>
 
-#define EPS 0.001
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -87,10 +86,7 @@ UKF::UKF() {
 
 UKF::~UKF() {}
 
-/**
- * @param {MeasurementPackage} meas_package The latest measurement data of
- * either radar or laser.
- */
+// Lidar or Radar
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   /**
   TODO:
@@ -133,11 +129,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   }
 }
 
-/**
- * Predicts sigma points, the state, and the state covariance matrix.
- * @param {double} delta_t the change in time (in seconds) between the last
- * measurement and this one.
- */
+
 void UKF::Prediction(double delta_t) {
   /**
   TODO:
@@ -161,10 +153,9 @@ void UKF::Prediction(double delta_t) {
 
   // Creating sigma points.
   MatrixXd Xsig_aug = GenerateSigmaPoints(x_aug, P_aug, lambda_, n_sig_);
-  // 2. Predict Sigma Points.
+  // Predict Sigma Points.
   Xsig_pred_ = PredictSigmaPoints(Xsig_aug, delta_t, n_x_, n_sig_, std_a_, std_yawdd_);
-  // 3. Predict Mean and Covariance
-  //predicted state mean
+  // Predict Mean and Covariance
   x_ = Xsig_pred_ * weights_;
 
   //predicted state covariance matrix
@@ -183,7 +174,6 @@ void UKF::Prediction(double delta_t) {
 
 /**
  * Updates the state and the state covariance matrix using a laser measurement.
- * @param {MeasurementPackage} meas_package
  */
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
   /**
@@ -356,12 +346,7 @@ void UKF::NormalizeAngleOnComponent(VectorXd vector, int index) {
 
 /**
  * Predits sigma points.
- * @param Xsig : Sigma points to predict.
- * @param delta_t : Time between k and k+1 in s
- * @param n_x : State dimension.
- * @param n_sig : Sigma points dimension.
- * @param nu_am : Process noise standard deviation longitudinal acceleration in m/s^2
- * @param nu_yawdd : Process noise standard deviation yaw acceleration in rad/s^2
+
  */
 MatrixXd UKF::PredictSigmaPoints(MatrixXd Xsig, double delta_t, int n_x, int n_sig, double nu_am, double nu_yawdd) {
   MatrixXd Xsig_pred = MatrixXd(n_x, n_sig);
@@ -381,7 +366,7 @@ MatrixXd UKF::PredictSigmaPoints(MatrixXd Xsig, double delta_t, int n_x, int n_s
     double px_p, py_p;
 
     //avoid division by zero
-    if (fabs(yawd) > EPS) {
+    if (fabs(yawd) > 0.001) {
         px_p = p_x + v/yawd * ( sin (yaw + yawd*delta_t) - sin(yaw));
         py_p = p_y + v/yawd * ( cos(yaw) - cos(yaw+yawd*delta_t) );
     }
